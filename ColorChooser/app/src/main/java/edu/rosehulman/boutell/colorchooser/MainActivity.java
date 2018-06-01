@@ -1,5 +1,6 @@
 package edu.rosehulman.boutell.colorchooser;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -14,6 +15,13 @@ import android.widget.TextView;
 
 
 public class MainActivity extends AppCompatActivity {
+
+  // Keys for passing intent extras
+  public static final String EXTRA_MESSAGE = "EXTRA_MESSAGE";
+  public static final String EXTRA_COLOR = "EXTRA_COLOR";
+
+  // Request code
+  private static final int REQUEST_CODE_INPUT = 1;
 
   // View
   private RelativeLayout mLayout;
@@ -64,14 +72,15 @@ public class MainActivity extends AppCompatActivity {
         return true;
 
       case R.id.action_change_color:
-        // TODO: Launch the InputActivity to get a result
-
+        // DONE: Launch the InputActivity to get a result
+        Intent inputIntent = new Intent(this, InputActivity.class);
+        inputIntent.putExtra(EXTRA_MESSAGE, mMessage);
+        inputIntent.putExtra(EXTRA_COLOR, mBackgroundColor);
+        startActivityForResult(inputIntent, REQUEST_CODE_INPUT);
         return true;
-
       case R.id.action_settings:
         return true;
     }
-
     return super.onOptionsItemSelected(item);
   }
 
@@ -80,5 +89,14 @@ public class MainActivity extends AppCompatActivity {
     mLayout.setBackgroundColor(mBackgroundColor);
   }
 
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
 
+    if (requestCode == REQUEST_CODE_INPUT && resultCode == Activity.RESULT_OK) {
+      mMessage = data.getStringExtra(EXTRA_MESSAGE);
+      mBackgroundColor = data.getIntExtra(EXTRA_COLOR, Color.GRAY);
+      updateUI();
+    }
+   }
 }
