@@ -3,6 +3,7 @@ package edu.rosehulman.boutell.colorchooser;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -42,7 +44,23 @@ public class MainActivity extends AppCompatActivity {
     fab.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        // TODO: Send an email with the message field as the body
+        // DONE: Send an email with the message field as the body
+        Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
+        emailIntent.setData(Uri.parse("mailto:"));
+
+        // Configure the email
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] {"somecool@example.com"});
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Best message ever!");
+        emailIntent.putExtra(Intent.EXTRA_TEXT, mMessage);
+
+        // Then open an email app
+        if (emailIntent.resolveActivity(getPackageManager()) != null) {
+          startActivity(emailIntent);
+        } else {
+          Toast.makeText(MainActivity.this,
+              "Sorry this device has no apps setup for email",
+              Toast.LENGTH_LONG).show();
+        }
       }
     });
 
@@ -92,7 +110,6 @@ public class MainActivity extends AppCompatActivity {
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
-
     if (requestCode == REQUEST_CODE_INPUT && resultCode == Activity.RESULT_OK) {
       mMessage = data.getStringExtra(EXTRA_MESSAGE);
       mBackgroundColor = data.getIntExtra(EXTRA_COLOR, Color.GRAY);
